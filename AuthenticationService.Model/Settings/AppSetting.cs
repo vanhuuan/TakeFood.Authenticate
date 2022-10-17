@@ -14,6 +14,8 @@ public class AppSetting
     /// JwtConfig
     /// </summary>
     public JwtConfig JwtConfig { get; set; }
+
+    public MailSettings MailSettings { get; set; }
 }
 
 /// <summary>
@@ -40,4 +42,31 @@ public class JwtConfig
     /// Time expirate of refresh topken
     /// </summary>
     public int ExpirationInMonths { get; set; }
+}
+
+public class MailSettings
+{
+    /// <summary>
+    /// Mail
+    /// </summary>
+    public String Mail { get; set; }
+
+    /// <summary>
+    /// DisplayName
+    /// </summary>
+    public String DisplayName { get; set; }
+
+    /// <summary>
+    /// Password
+    /// </summary>
+    public string Password { get; set; }
+
+    /// <summary>
+    /// Server host
+    /// </summary>
+    public string Host { get; set; }
+    /// <summary>
+    /// Port
+    /// </summary>
+    public int Port { get; set; }
 }
