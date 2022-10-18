@@ -112,20 +112,20 @@ public class AuthenController : Controller
         }
     }
 
-    [HttpGet]
-    [Route("Active")]
-    public async Task<ActionResult> ActiveUser([Required] string token)
-    {
-        try
+    /*    [HttpGet]
+        [Route("Active")]
+        public async Task<ActionResult> ActiveUser([Required] string token)
         {
-            await UserService.Active(token);
-            return Ok();
-        }
-        catch (Exception e)
-        {
-            return BadRequest(e.Message);
-        }
-    }
+            try
+            {
+                await UserService.Active(token);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }*/
 
     private void SetTokenCookie(string refreshToken, string accessToken)
     {
