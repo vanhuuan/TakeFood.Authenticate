@@ -14,18 +14,6 @@ public class User : ModelMongoDB
     public string Name { get; set; }
 
     /// <summary>
-    /// Email
-    /// </summary>
-    [BsonElement("email")]
-    public string Email { get; set; }
-
-    /// <summary>
-    /// Username
-    /// </summary>
-    [BsonElement("password")]
-    public string Password { get; set; }
-
-    /// <summary>
     /// Avatar
     /// </summary>
     [BsonElement("avatar")]
@@ -46,7 +34,13 @@ public class User : ModelMongoDB
     /// <summary>
     /// Đã kích hoạt hay chưa
     /// </summary>
-    [BsonElement("isActive")]
-    public bool IsActive { get; set; }
+    [BsonElement("state")]
+    public string State { get; set; }
+
+    /// <summary>
+    /// Gender
+    /// </summary>
+    [BsonElement("geder")]
+    public bool Gender { get; set; }
 
 }

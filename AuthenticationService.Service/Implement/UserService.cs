@@ -16,12 +16,17 @@ public class UserService : IUserService
     private readonly IMongoRepository<User> userRepository;
 
     /// <summary>
-    /// UserRepository
+    /// AccountRepository
+    /// </summary>
+    private readonly IMongoRepository<Account> accountRepository;
+
+    /// <summary>
+    /// RoleRepository
     /// </summary>
     private readonly IMongoRepository<Role> roleRepository;
 
     /// <summary>
-    /// UserRepository
+    /// UserRefreshTokenRepository
     /// </summary>
     private readonly IMongoRepository<UserRefreshToken> userRefreshTokenRepository;
 
@@ -47,10 +52,12 @@ public class UserService : IUserService
     public async Task<UserViewDto> GetUserByIdAsync(string id)
     {
         var user = await userRepository.FindByIdAsync(id);
+        var account = await accountRepository.FindOneAsync(x => x.UserId == id);
+
         var view = new UserViewDto()
         {
             Name = user.Name,
-            Email = user.Email,
+            Email = account.Email,
             Photo = user.Avatar,
             Id = user.Id,
             Phone = user.PhoneNumber
@@ -80,8 +87,8 @@ public class UserService : IUserService
         {
             return null;
         }
-        users = await userRepository.FindAsync(x => x.Email == createUserDto.Email);
-        if (users.Count != 0)
+        var accounts = await accountRepository.FindAsync(x => x.Email == createUserDto.Email);
+        if (accounts.Count != 0)
         {
             return null;
         }
@@ -91,16 +98,22 @@ public class UserService : IUserService
             Id = ObjectId.GenerateNewId().ToString(),
             Name = createUserDto.Name,
             PhoneNumber = createUserDto.PhoneNumber,
-            Email = createUserDto.Email,
             Avatar = createUserDto.Avatar,
             RoleIds = new List<String>() { "2" },
-            IsActive = true,
+            State = "Active",
             UpdatedDate = DateTime.Now,
             CreatedDate = DateTime.Now,
+        };
+        var rs = await userRepository.InsertAsync(user);
+
+        var account = new Account()
+        {
             Password = BC.HashPassword(createUserDto.Password),
+            Email = createUserDto.Email,
+            UserId = rs.Id
         };
 
-        var rs = await userRepository.InsertAsync(user);
+        var rsAcount = await accountRepository.InsertAsync(account);
 
         return await GetUserByIdAsync(rs.Id);
     }
@@ -111,12 +124,14 @@ public class UserService : IUserService
     /// <returns></returns>
     public async Task<UserViewDto> SignIn(LoginDto loginDto)
     {
-        var user = await userRepository.FindOneAsync(x => x.PhoneNumber.Equals(loginDto.UserName) || x.Email.Equals(loginDto.UserName));
-        if (user == null)
+        var account = await accountRepository.FindOneAsync(x => x.Email.Equals(loginDto.UserName));
+        if (account == null)
         {
             return null;
         }
-        if (BC.Verify(loginDto.Password, user.Password) && user.IsActive)
+
+        var user = await userRepository.FindByIdAsync(account.UserId);
+        if (BC.Verify(loginDto.Password, account.Password) && user.State == "Active")
         {
             return await GetUserByIdAsync(user.Id);
         }
@@ -124,5 +139,10 @@ public class UserService : IUserService
         {
             return null;
         }
+    }
+
+    public Task Active(string token)
+    {
+        return null;
     }
 }
