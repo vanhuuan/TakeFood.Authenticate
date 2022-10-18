@@ -25,4 +25,10 @@ public interface IUserService
     /// </summary>
     /// <returns></returns>
     Task<UserViewDto> SignIn(LoginDto loginDto);
+
+    /// <summary>
+    /// Active user via active link
+    /// </summary>
+    /// <returns></returns>
+    Task Active(string token);
 }

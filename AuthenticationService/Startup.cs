@@ -78,8 +78,6 @@ public class Startup
         services.Configure<AppSetting>(appSettingsSection);
         appSetting = appSettingsSection.Get<AppSetting>();
 
-        services.AddOptions();
-
         services.AddMvc((options) =>
         {
             options.EnableEndpointRouting = true;
@@ -106,8 +104,10 @@ public class Startup
         services.AddMongoRepository<User>(appSetting.NoSQL.Collections.User);
         services.AddMongoRepository<Role>(appSetting.NoSQL.Collections.Role);
         services.AddMongoRepository<UserRefreshToken>(appSetting.NoSQL.Collections.UserRefreshToken);
+        services.AddMongoRepository<Account>(appSetting.NoSQL.Collections.Account);
 
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IMailService, MailService>();
         services.AddScoped<IJwtService, JwtService>(x => new JwtService(x.GetRequiredService<IMongoRepository<UserRefreshToken>>()
            , appSetting.JwtConfig.Secret, appSetting.JwtConfig.Secret2, appSetting.JwtConfig.ExpirationInHours, appSetting.JwtConfig.ExpirationInMonths));
 
