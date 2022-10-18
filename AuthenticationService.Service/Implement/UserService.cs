@@ -100,7 +100,7 @@ public class UserService : IUserService
             PhoneNumber = createUserDto.PhoneNumber,
             Avatar = createUserDto.Avatar,
             RoleIds = new List<String>() { "2" },
-            State = "InActive",
+            State = "Active",
             UpdatedDate = DateTime.Now,
             CreatedDate = DateTime.Now,
         };
@@ -143,6 +143,6 @@ public class UserService : IUserService
 
     public Task Active(string token)
     {
-
+        return null;
     }
 }
