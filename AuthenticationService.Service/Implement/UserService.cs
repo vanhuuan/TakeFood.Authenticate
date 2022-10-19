@@ -99,7 +99,6 @@ public class UserService : IUserService
             Id = ObjectId.GenerateNewId().ToString(),
             Name = createUserDto.Name,
             PhoneNumber = createUserDto.PhoneNumber,
-            Avatar = createUserDto.Avatar,
             RoleIds = new List<String>() { "2" },
             State = "Active",
             UpdatedDate = DateTime.Now,
