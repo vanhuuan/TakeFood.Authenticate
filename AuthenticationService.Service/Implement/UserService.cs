@@ -35,14 +35,15 @@ public class UserService : IUserService
     /// </summary>
     /// <param name="userRepository"></param>
     /// <param name="roleRepository"></param>
-    /// <param name="httpContextAccessor"></param>
     public UserService(IMongoRepository<User> userRepository,
                        IMongoRepository<UserRefreshToken> userRefreshTokenRepository,
-                       IMongoRepository<Role> roleRepository)
+                       IMongoRepository<Role> roleRepository,
+                       IMongoRepository<Account> accountRepository)
     {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.userRefreshTokenRepository = userRefreshTokenRepository;
+        this.accountRepository = accountRepository;
     }
 
     /// <summary>
