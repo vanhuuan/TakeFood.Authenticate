@@ -23,6 +23,7 @@ public class CreateUserDto
     /// Username
     /// </summary>
     [JsonPropertyName("username")]
+    [Required]
     public string Username { get; set; }
 
     /// <summary>
@@ -31,13 +32,6 @@ public class CreateUserDto
     [JsonPropertyName("password")]
     [Required]
     public string Password { get; set; }
-
-    /// <summary>
-    /// Avatar
-    /// </summary>
-    [JsonPropertyName("avatar")]
-    [Required]
-    public string Avatar { get; set; } = "";
 
     /// <summary>
     /// Số điện thoại
