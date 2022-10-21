@@ -22,13 +22,6 @@ public class CreateUserDto
     /// <summary>
     /// Username
     /// </summary>
-    [JsonPropertyName("username")]
-    [Required]
-    public string Username { get; set; }
-
-    /// <summary>
-    /// Username
-    /// </summary>
     [JsonPropertyName("password")]
     [Required]
     public string Password { get; set; }
