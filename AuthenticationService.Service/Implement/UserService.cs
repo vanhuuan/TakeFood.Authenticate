@@ -31,6 +31,16 @@ public class UserService : IUserService
     private readonly IMongoRepository<UserRefreshToken> userRefreshTokenRepository;
 
     /// <summary>
+    /// Mail Service
+    /// </summary>
+    private readonly IMailService mailService;
+
+    /// <summary>
+    /// Jwt Service
+    /// </summary>
+    private readonly IJwtService jwtService;
+
+    /// <summary>
     /// User service constructor
     /// </summary>
     /// <param name="userRepository"></param>
@@ -38,12 +48,16 @@ public class UserService : IUserService
     public UserService(IMongoRepository<User> userRepository,
                        IMongoRepository<UserRefreshToken> userRefreshTokenRepository,
                        IMongoRepository<Role> roleRepository,
-                       IMongoRepository<Account> accountRepository)
+                       IMongoRepository<Account> accountRepository,
+                       IMailService mailService,
+                       IJwtService jwtService)
     {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.userRefreshTokenRepository = userRefreshTokenRepository;
         this.accountRepository = accountRepository;
+        this.mailService = mailService;
+        this.jwtService = jwtService;
     }
 
     /// <summary>
@@ -100,7 +114,7 @@ public class UserService : IUserService
             Name = createUserDto.Name,
             PhoneNumber = createUserDto.PhoneNumber,
             RoleIds = new List<String>() { "2" },
-            State = "Active",
+            State = "InActive",
             UpdatedDate = DateTime.Now,
             CreatedDate = DateTime.Now,
         };
@@ -127,7 +141,7 @@ public class UserService : IUserService
         var account = await accountRepository.FindOneAsync(x => x.Email.Equals(loginDto.UserName));
         if (account == null)
         {
-            return null;
+            throw new Exception("Wrong user name or password");
         }
 
         var user = await userRepository.FindByIdAsync(account.UserId);
@@ -137,12 +151,20 @@ public class UserService : IUserService
         }
         else
         {
-            return null;
+            throw new Exception("Wrong user name or password");
         }
     }
 
-    public Task Active(string token)
+    public async void Active(string token)
     {
-        return null;
+        var check = jwtService.ValidSecurityToken(token);
+        if (!check)
+        {
+            throw new Exception("Invalid token");
+        }
+        var id = jwtService.GetId(token);
+        var user = await userRepository.FindOneAsync(x => x.Id == id);
+        user.State = "Active";
+        await userRepository.UpdateAsync(user);
     }
 }

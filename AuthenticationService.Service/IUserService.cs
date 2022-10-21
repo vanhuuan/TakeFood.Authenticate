@@ -30,5 +30,5 @@ public interface IUserService
     /// Active user via active link
     /// </summary>
     /// <returns></returns>
-    Task Active(string token);
+    void Active(string token);
 }

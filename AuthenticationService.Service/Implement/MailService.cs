@@ -1,7 +1,7 @@
 ﻿using AuthenticationService.Model.Content;
 using AuthenticationService.Settings;
-using MailKit.Security;
-using MimeKit;
+using System.Net;
+using System.Net.Mail;
 
 namespace AuthenticationService.Service.Implement;
 
@@ -20,35 +20,30 @@ public class MailService : IMailService
     // Gửi email, theo nội dung trong mailContent
     public async Task SendMail(MailContent mailContent)
     {
-        var email = new MimeMessage();
-        email.Sender = new MailboxAddress(mailSettings.DisplayName, mailSettings.Mail);
-        email.From.Add(new MailboxAddress(mailSettings.DisplayName, mailSettings.Mail));
-        email.To.Add(MailboxAddress.Parse(mailContent.To));
-        email.Subject = mailContent.Subject;
-
-
-        var builder = new BodyBuilder();
-        builder.HtmlBody = mailContent.Body;
-        email.Body = builder.ToMessageBody();
-
-        // dùng SmtpClient của MailKit
-        using var smtp = new MailKit.Net.Smtp.SmtpClient();
-
-        try
+        using (SmtpClient client = new SmtpClient(mailSettings.Host, mailSettings.Port))
         {
-            smtp.Connect(mailSettings.Host, mailSettings.Port, SecureSocketOptions.StartTls);
-            smtp.Authenticate(mailSettings.Mail, mailSettings.Password);
-            await smtp.SendAsync(email);
+            try
+            {
+                client.EnableSsl = true;
+                client.DeliveryMethod = SmtpDeliveryMethod.Network;
+                client.UseDefaultCredentials = false;
+                client.Credentials = new NetworkCredential(mailSettings.Mail, mailSettings.Password);
+                MailMessage mailMessage = new MailMessage();
+                mailMessage.To.Add(mailContent.To);
+                mailMessage.From = new MailAddress(mailSettings.Mail);
+                mailMessage.Subject = mailContent.Subject;
+                mailMessage.Body = mailContent.Body;
+                await client.SendMailAsync(mailMessage);
+                client.Dispose();
+            }
+            catch (Exception ex)
+            {
+                // Gửi mail thất bại, nội dung email sẽ lưu vào thư mục mailssave
+                System.IO.Directory.CreateDirectory("mailssave");
+                var emailsavefile = string.Format(@"mailssave/{0}.eml", Guid.NewGuid());
+                client.Dispose();
+            }
         }
-        catch (Exception ex)
-        {
-            // Gửi mail thất bại, nội dung email sẽ lưu vào thư mục mailssave
-            System.IO.Directory.CreateDirectory("mailssave");
-            var emailsavefile = string.Format(@"mailssave/{0}.eml", Guid.NewGuid());
-            await email.WriteToAsync(emailsavefile);
-        }
-
-        smtp.Disconnect(true);
     }
     public async Task SendEmailAsync(string email, string subject, string htmlMessage)
     {

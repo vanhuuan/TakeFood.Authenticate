@@ -1,4 +1,5 @@
 ﻿using AuthenticationService.Middleware;
+using AuthenticationService.Model.Content;
 using AuthenticationService.Service;
 using AuthenticationService.ViewModel.Dtos;
 using AuthenticationService.ViewModel.Dtos.User;
@@ -9,14 +10,20 @@ namespace AuthenticationService.Controllers;
 
 public class AuthenController : Controller
 {
+    private string url = "https://localhost:7287/";
+
+    // private string url = "https://takefoodauthentication.azurewebsites.net/";
     public IUserService UserService { get; set; }
 
     public IJwtService JwtService { get; set; }
 
-    public AuthenController(IUserService userService, IJwtService jwtService)
+    public IMailService MailService { get; set; }
+
+    public AuthenController(IUserService userService, IJwtService jwtService, IMailService mailService)
     {
         UserService = userService;
         JwtService = jwtService;
+        MailService = mailService;
     }
 
     [HttpPost]
@@ -34,10 +41,14 @@ public class AuthenController : Controller
             {
                 throw new Exception("User existed");
             }
-            var refreshToken = JwtService.GenerateRefreshToken(rs.Id);
+
             var accessToken = JwtService.GenerateSecurityToken(rs.Id, rs.Roles);
-            SetTokenCookie(refreshToken, accessToken);
-            return Ok(rs);
+            var mail = new MailContent();
+            mail.Subject = "Take Food Activation Email";
+            mail.To = user.Email;
+            mail.Body = url + "Active?token=" + accessToken;
+            await MailService.SendMail(mail);
+            return Ok();
         }
         catch (Exception e)
         {
@@ -112,20 +123,20 @@ public class AuthenController : Controller
         }
     }
 
-    /*    [HttpGet]
-        [Route("Active")]
-        public async Task<ActionResult> ActiveUser([Required] string token)
+    [HttpGet]
+    [Route("Active")]
+    public async Task<ActionResult> ActiveUser([Required] string token)
+    {
+        try
         {
-            try
-            {
-                await UserService.Active(token);
-                return Ok();
-            }
-            catch (Exception e)
-            {
-                return BadRequest(e.Message);
-            }
-        }*/
+            UserService.Active(token);
+            return Ok("OKe roi do, ve lai r dang nhap di");
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
 
     private void SetTokenCookie(string refreshToken, string accessToken)
     {
