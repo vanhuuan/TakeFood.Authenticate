@@ -34,6 +34,17 @@ public class AddressService : IAddressService
 
     }
 
+    public async Task DeleteAddressAsync(string addressId, string uid)
+    {
+        var userAddress = await userAddressRepository.FindOneAsync(x => x.UserId == uid && x.AddressId == addressId);
+        if (userAddress == null)
+        {
+            return;
+        }
+        await userAddressRepository.RemoveAsync(userAddress.Id);
+        await addressRepository.RemoveAsync(userAddress.AddressId);
+    }
+
     public async Task<List<AddressDto>> GetUserAddressAsync(string uid)
     {
         var addressId = await userAddressRepository.FindAsync(x => x.UserId == uid);

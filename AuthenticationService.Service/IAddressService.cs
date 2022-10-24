@@ -10,4 +10,6 @@ public interface IAddressService
     Task CreateAddressAsync(AddAddressDto address, string uid);
 
     Task UpdateAddressAsync(UpdateAddressDto address, string uid);
+
+    Task DeleteAddressAsync(string addressId, string uid);
 }
