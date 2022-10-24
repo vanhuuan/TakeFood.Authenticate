@@ -531,7 +531,9 @@ public partial class MongoRepository<T>
             if (entity.Id == null)
             {
                 entity.Id = ObjectId.GenerateNewId().ToString();
+                entity.CreatedDate = DateTime.UtcNow;
             }
+            entity.UpdatedDate = DateTime.UtcNow;
             entity.IsDeleted = false;
             await Collection.InsertOneAsync(entity);
         }

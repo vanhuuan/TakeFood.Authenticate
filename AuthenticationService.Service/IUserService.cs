@@ -31,4 +31,10 @@ public interface IUserService
     /// </summary>
     /// <returns></returns>
     void Active(string token);
+
+    /// <summary>
+    /// UpdateUserInfo
+    /// </summary>
+    /// <returns></returns>
+    Task<UserViewDto> UpdateUserInfo(UpdateUserDto updateDto, string uid);
 }

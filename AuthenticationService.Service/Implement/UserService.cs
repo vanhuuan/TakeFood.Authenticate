@@ -167,4 +167,22 @@ public class UserService : IUserService
         user.State = "Active";
         await userRepository.UpdateAsync(user);
     }
+
+    public async Task<UserViewDto> UpdateUserInfo(UpdateUserDto updateDto, string uid)
+    {
+        var user = await userRepository.FindByIdAsync(uid);
+        var acc = await accountRepository.FindOneAsync(x => x.UserId.Equals(uid));
+        if (user == null)
+        {
+            throw new Exception("User's not exist!");
+        }
+        user.Name = updateDto.Name;
+        user.PhoneNumber = updateDto.PhoneNumber;
+        acc.Email = updateDto.Email;
+
+        await userRepository.UpdateAsync(user);
+        await accountRepository.UpdateAsync(acc);
+
+        return await GetUserByIdAsync(uid);
+    }
 }

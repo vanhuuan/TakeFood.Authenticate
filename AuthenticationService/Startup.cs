@@ -1,5 +1,6 @@
 ﻿using AuthenticationService.Extension;
 using AuthenticationService.Middleware;
+using AuthenticationService.Model.Entities.Address;
 using AuthenticationService.Model.Entities.Role;
 using AuthenticationService.Model.Entities.User;
 using AuthenticationService.Model.Repository;
@@ -105,9 +106,12 @@ public class Startup
         services.AddMongoRepository<Role>(appSetting.NoSQL.Collections.Role);
         services.AddMongoRepository<UserRefreshToken>(appSetting.NoSQL.Collections.UserRefreshToken);
         services.AddMongoRepository<Account>(appSetting.NoSQL.Collections.Account);
+        services.AddMongoRepository<Address>(appSetting.NoSQL.Collections.UserAddress);
+        services.AddMongoRepository<UserAddress>(appSetting.NoSQL.Collections.UserAddress);
 
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IMailService, MailService>();
+        services.AddScoped<IAddressService, AddressService>();
         services.AddScoped<IJwtService, JwtService>(x => new JwtService(x.GetRequiredService<IMongoRepository<UserRefreshToken>>()
            , appSetting.JwtConfig.Secret, appSetting.JwtConfig.Secret2, appSetting.JwtConfig.ExpirationInHours, appSetting.JwtConfig.ExpirationInMonths));
 

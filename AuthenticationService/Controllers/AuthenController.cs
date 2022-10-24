@@ -8,6 +8,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace AuthenticationService.Controllers;
 
+
 public class AuthenController : Controller
 {
     // private string url = "https://localhost:7287/";
