@@ -1,5 +1,4 @@
-﻿using AuthenticationService.Middleware;
-using AuthenticationService.Model.Content;
+﻿using AuthenticationService.Model.Content;
 using AuthenticationService.Service;
 using AuthenticationService.ViewModel.Dtos;
 using AuthenticationService.ViewModel.Dtos.User;
@@ -80,24 +79,6 @@ public class AuthenController : Controller
         catch (Exception e)
         {
             Console.WriteLine(e.ToString());
-            return BadRequest(e.Message);
-        }
-    }
-
-
-    [HttpGet]
-    [Authorize("User")]
-    [Route("GetUserInfo")]
-    public async Task<ActionResult<UserViewDto>> GetUserAsync()
-    {
-        try
-        {
-            var id = GetId();
-            var rs = await UserService.GetUserByIdAsync(id);
-            return Ok(rs);
-        }
-        catch (Exception e)
-        {
             return BadRequest(e.Message);
         }
     }

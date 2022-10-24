@@ -41,7 +41,7 @@ public class UserController : ControllerBase
     [HttpPut]
     [Authorize("User")]
     [Route("UpdateAddress")]
-    public async Task<IActionResult> UpdateNewAddress([FromBody] UpdateAddressDto address)
+    public async Task<IActionResult> UpdateAddress([FromBody] UpdateAddressDto address)
     {
         try
         {
@@ -50,6 +50,26 @@ public class UserController : ControllerBase
                 return BadRequest();
             }
             await addressService.UpdateAddressAsync(address, GetId());
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [HttpDelete]
+    [Authorize("User")]
+    [Route("DeleteAdderss")]
+    public async Task<IActionResult> DeleteAddressAsync(string addressId)
+    {
+        try
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+            await addressService.DeleteAddressAsync(addressId, GetId());
             return Ok();
         }
         catch (Exception e)
