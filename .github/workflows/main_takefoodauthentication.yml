@@ -53,5 +53,5 @@ jobs:
         with:
           app-name: 'TakeFoodAuthentication'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_38DFE3F44FBF4EC895266C7ABA263FBB }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_C6B854F5531E40508E9096C3FAEC5965 }}
           package: .
