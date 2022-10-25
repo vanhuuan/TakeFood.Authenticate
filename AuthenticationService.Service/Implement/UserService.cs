@@ -114,7 +114,7 @@ public class UserService : IUserService
             Name = createUserDto.Name,
             PhoneNumber = createUserDto.PhoneNumber,
             RoleIds = new List<String>() { "2" },
-            State = "InActive",
+            State = "Active",
             UpdatedDate = DateTime.Now,
             CreatedDate = DateTime.Now,
         };
