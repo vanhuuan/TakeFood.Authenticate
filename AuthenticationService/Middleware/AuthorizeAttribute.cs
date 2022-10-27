@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AuthenticationService.Model.Entities;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace AuthenticationService.Middleware;
@@ -8,9 +9,26 @@ public class AuthorizeAttribute : Attribute, IAuthorizationFilter
 {
     private readonly String _role;
 
-    public AuthorizeAttribute(String role)
+    public AuthorizeAttribute(params Roles[] roles)
     {
-        _role = role ?? "";
+        string role = "";
+        var rs = roles.FirstOrDefault();
+        switch (rs)
+        {
+            case Roles.Admin:
+                role = "Admin";
+                break;
+            case Roles.User:
+                role = "User";
+                break;
+            case Roles.ShopeOwner:
+                role = "ShopeOwner";
+                break;
+            default:
+                role = "User";
+                break;
+        }
+        _role = role;
     }
     public void OnAuthorization(AuthorizationFilterContext context)
     {

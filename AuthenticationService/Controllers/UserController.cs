@@ -1,7 +1,8 @@
-﻿using AuthenticationService.Service;
+﻿using AuthenticationService.Middleware;
+using AuthenticationService.Model.Entities;
+using AuthenticationService.Service;
 using AuthenticationService.ViewModel.Dtos;
 using AuthenticationService.ViewModel.Dtos.User;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuthenticationService.Controllers;
@@ -19,7 +20,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize("User")]
+    [Authorize]
     [Route("AddAddress")]
     public async Task<IActionResult> AddNewAddress([FromBody] AddAddressDto address)
     {
@@ -39,7 +40,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPut]
-    [Authorize("User")]
+    [Authorize]
     [Route("UpdateAddress")]
     public async Task<IActionResult> UpdateAddress([FromBody] UpdateAddressDto address)
     {
@@ -59,7 +60,7 @@ public class UserController : ControllerBase
     }
 
     [HttpDelete]
-    [Authorize("User")]
+    [Authorize]
     [Route("DeleteAdderss")]
     public async Task<IActionResult> DeleteAddressAsync(string addressId)
     {
@@ -79,7 +80,7 @@ public class UserController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize("User")]
+    [Authorize(roles: Roles.User)]
     [Route("GetAddress")]
     public async Task<ActionResult<IList<AddAddressDto>>> GetUserAddress()
     {
@@ -99,7 +100,7 @@ public class UserController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize("User")]
+    [Authorize]
     [Route("GetUserInfo")]
     public async Task<ActionResult<UserViewDto>> GetUserAsync()
     {
@@ -116,7 +117,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPut]
-    [Authorize("User")]
+    [Authorize]
     [Route("UpdateInfo")]
     public async Task<IActionResult> UpdateUserInfo([FromBody] UpdateUserDto info)
     {
