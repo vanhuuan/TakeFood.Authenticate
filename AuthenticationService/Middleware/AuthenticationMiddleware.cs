@@ -23,7 +23,7 @@ public class AuthenticationMiddleware
             jwtService = _jwtService;
             var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
             if (token != null)
-                attachUserToContext(context, token, userService, jwtService);
+                await attachUserToContext(context, token, userService, jwtService);
             await _next(context);
         }
         catch (Exception e)
@@ -31,7 +31,7 @@ public class AuthenticationMiddleware
             Console.WriteLine(e.Message);
         }
     }
-    private async void attachUserToContext(HttpContext context, string token, IUserService userService, IJwtService jwtService)
+    private async Task attachUserToContext(HttpContext context, string token, IUserService userService, IJwtService jwtService)
     {
         try
         {

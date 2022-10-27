@@ -91,6 +91,8 @@ public class Startup
         services.AddControllers();
         services.AddSwaggerGen();
         services.AddEndpointsApiExplorer();
+        services.AddAuthentication();
+        services.AddAuthorization();
 
         string databaseName = appSetting.NoSQL.DatabaseName;
         string mongoConnectionString = $"{appSetting.NoSQL?.ConnectionString}{appSetting.NoSQL?.ConnectionSetting}";
@@ -149,7 +151,8 @@ public class Startup
             app.UseDefaultFiles();
 
             app.UseStaticFiles();
-
+            app.UseAuthorization();
+            app.UseAuthentication();
             app.UseSwagger();
             app.UseSwaggerUI();
             app.UseEndpoints(endpoints =>
