@@ -100,12 +100,12 @@ public class UserService : IUserService
         var users = await userRepository.FindAsync(x => x.PhoneNumber == createUserDto.PhoneNumber);
         if (users.Count != 0)
         {
-            return null;
+            throw new Exception("Trung SDT");
         }
         var accounts = await accountRepository.FindAsync(x => x.Email == createUserDto.Email);
         if (accounts.Count != 0)
         {
-            return null;
+            throw new Exception("Trung Email");
         }
 
         var user = new User()
