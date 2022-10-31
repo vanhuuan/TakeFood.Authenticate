@@ -61,13 +61,15 @@ public class JwtService : IJwtService
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.UTF8.GetBytes(_secret);
+        List<Claim> claims = new List<Claim>();
+        claims.Add(new Claim("UId", id));
+        foreach (var i in roles)
+        {
+            claims.Add(new Claim(i, i));
+        }
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity(new[]
-            {
-                new Claim("UId", id),
-                new Claim("Roles", JsonSerializer.Serialize(roles))
-            }),
+            Subject = new ClaimsIdentity(claims),
             IssuedAt = DateTime.Now,
             Expires = DateTime.UtcNow.AddHours(double.Parse(_expDate)),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)

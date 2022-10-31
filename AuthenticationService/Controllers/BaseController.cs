@@ -20,4 +20,9 @@ public class BaseController : Controller
     {
         // log = log4net.LogManager.GetLogger(GetType());
     }
+    public string GetId()
+    {
+        String id = HttpContext.Items["Id"]!.ToString()!;
+        return id;
+    }
 }

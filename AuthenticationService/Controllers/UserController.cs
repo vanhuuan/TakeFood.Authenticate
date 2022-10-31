@@ -100,7 +100,6 @@ public class UserController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize]
     [Route("GetUserInfo")]
     public async Task<ActionResult<UserViewDto>> GetUserAsync()
     {
@@ -117,7 +116,6 @@ public class UserController : ControllerBase
     }
 
     [HttpPut]
-    [Authorize]
     [Route("UpdateInfo")]
     public async Task<IActionResult> UpdateUserInfo([FromBody] UpdateUserDto info)
     {
@@ -138,11 +136,7 @@ public class UserController : ControllerBase
 
     public string GetId()
     {
-        String token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last()!;
-        return jwtService.GetId(token);
-    }
-    public string GetId(string token)
-    {
-        return jwtService.GetId(token);
+        String id = HttpContext.Items["Id"]!.ToString()!;
+        return id;
     }
 }
