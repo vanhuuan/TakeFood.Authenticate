@@ -124,7 +124,7 @@ public class AuthenController : Controller
     {
         var cookieOptions = new CookieOptions
         {
-            HttpOnly = true,
+            HttpOnly = false,
             Expires = DateTime.UtcNow.AddMonths(5)
         };
         Response.Cookies.Append("RefreshToken", refreshToken, cookieOptions);
