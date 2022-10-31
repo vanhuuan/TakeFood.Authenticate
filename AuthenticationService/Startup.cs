@@ -125,7 +125,7 @@ public class Startup
                     builder.AllowAnyOrigin()
                     .AllowAnyHeader()
                     .AllowAnyMethod();
-                    //.AllowCredentials();
+                    .AllowCredentials();
                 }
             );
         });
