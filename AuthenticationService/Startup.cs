@@ -144,7 +144,7 @@ public class Startup
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             });
             app.UseRouting();
-
+            app.UseCors();
             app.UseMiddleware<AuthenticationMiddleware>();
             // app.UseMiddleware<UserMiddleware>();
 

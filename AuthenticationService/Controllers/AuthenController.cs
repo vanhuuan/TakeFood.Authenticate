@@ -73,6 +73,8 @@ public class AuthenController : Controller
             }
             var refreshToken = JwtService.GenerateRefreshToken(rs.Id);
             var accessToken = JwtService.GenerateSecurityToken(rs.Id, rs.Roles);
+            rs.RefreshToken = refreshToken;
+            rs.AccessToken = accessToken;
             SetTokenCookie(refreshToken, accessToken);
             return Ok(rs);
         }
