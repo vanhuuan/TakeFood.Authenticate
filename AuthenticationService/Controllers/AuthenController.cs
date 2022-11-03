@@ -98,6 +98,7 @@ public class AuthenController : Controller
             var id = GetId(token);
             var rs = await UserService.GetUserByIdAsync(id);
             var accessToken = JwtService.GenerateSecurityToken(id, rs.Roles);
+            rs.AccessToken = accessToken;
             SetTokenCookie(token, accessToken);
             return Ok();
         }
