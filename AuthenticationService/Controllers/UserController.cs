@@ -136,6 +136,20 @@ public class UserController : ControllerBase
         }
     }
 
+    [HttpGet]
+    [Route("GetNewsUser")]
+    public async Task<JsonResult> GetNewsUser()
+    {
+        try
+        {
+            JsonResult json = new JsonResult(await userService.GetNewsUser());
+            return json;
+        }catch(Exception e)
+        {
+            return new JsonResult(e);
+        }
+    }
+
     public string GetId()
     {
         String token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last()!;

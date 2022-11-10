@@ -185,4 +185,25 @@ public class UserService : IUserService
 
         return await GetUserByIdAsync(uid);
     }
+
+    public async Task<List<NewsUserDto>> GetNewsUser()
+    {
+        List<User> allUser = (List<User>)await userRepository.GetAllAsync();
+        allUser.Reverse();
+
+        List<NewsUserDto> usersDto = new();
+
+        foreach(var user in allUser.Take(10))
+        {
+            NewsUserDto newsUserDto = new()
+            {
+                UserID = user.Id,
+                Name = user.Name
+            };
+
+            usersDto.Add(newsUserDto);
+        }
+
+        return usersDto;
+    }
 }

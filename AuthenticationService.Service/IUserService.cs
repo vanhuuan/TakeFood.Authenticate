@@ -37,4 +37,5 @@ public interface IUserService
     /// </summary>
     /// <returns></returns>
     Task<UserViewDto> UpdateUserInfo(UpdateUserDto updateDto, string uid);
+    Task<List<NewsUserDto>> GetNewsUser();
 }
