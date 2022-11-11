@@ -100,7 +100,7 @@ public class AuthenController : Controller
             var accessToken = JwtService.GenerateSecurityToken(id, rs.Roles);
             rs.AccessToken = accessToken;
             SetTokenCookie(token, accessToken);
-            return Ok();
+            return Ok(rs);
         }
         catch (Exception e)
         {
