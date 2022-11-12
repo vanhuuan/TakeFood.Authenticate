@@ -4,6 +4,7 @@ using AuthenticationService.Service;
 using AuthenticationService.ViewModel.Dtos;
 using AuthenticationService.ViewModel.Dtos.User;
 using Microsoft.AspNetCore.Mvc;
+using System.Runtime.InteropServices;
 
 namespace AuthenticationService.Controllers;
 
@@ -168,6 +169,36 @@ public class UserController : ControllerBase
         catch (Exception e)
         {
             return BadRequest(e.Message);
+        }
+    }
+
+    [HttpGet]
+    [Route("GetAllUser")]
+    public async Task<JsonResult> GetAllUser([Optional] string status)
+    {
+        try
+        {
+            List<ShowUserDto> showUsers = await userService.GetAllUser(status);
+            return new JsonResult(showUsers);
+        }
+        catch (Exception e)
+        {
+            return new JsonResult(e);
+        }
+    }
+
+    [HttpGet]
+    [Route("GetUserByID")]
+    public async Task<JsonResult> GetUserByID(string id)
+    {
+        try
+        {
+            DetailsUserDto detailsUserDto = await userService.GetUserByID(id);
+            return new JsonResult(detailsUserDto);
+        }
+        catch
+        {
+            return new JsonResult("Không tồn tại user này");
         }
     }
 

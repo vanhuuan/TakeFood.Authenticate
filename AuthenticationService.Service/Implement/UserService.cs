@@ -1,4 +1,6 @@
-﻿using AuthenticationService.Model.Entities.Role;
+
+using AuthenticationService.Model.Entities.Address;
+using AuthenticationService.Model.Entities.Role;
 using AuthenticationService.Model.Entities.User;
 using AuthenticationService.Model.Repository;
 using AuthenticationService.ViewModel.Dtos;
@@ -31,6 +33,7 @@ public class UserService : IUserService
     /// </summary>
     private readonly IMongoRepository<UserRefreshToken> userRefreshTokenRepository;
 
+    private readonly IMongoRepository<Address> addressRepository;
     /// <summary>
     /// Mail Service
     /// </summary>
@@ -47,13 +50,17 @@ public class UserService : IUserService
     /// </summary>
     /// <param name="userRepository"></param>
     /// <param name="roleRepository"></param>
+    /// 
+    private readonly IMongoRepository<UserAddress> userAddressRepository;
     public UserService(IMongoRepository<User> userRepository,
                        IMongoRepository<UserRefreshToken> userRefreshTokenRepository,
                        IMongoRepository<Role> roleRepository,
                        IMongoRepository<Account> accountRepository,
                        IMailService mailService,
                        IJwtService jwtService,
-                       IAddressService addressService)
+                       IAddressService addressService,
+                       IMongoRepository<Address> addressRepository,
+                       IMongoRepository<UserAddress> userAddressRepository)
     {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
@@ -62,6 +69,8 @@ public class UserService : IUserService
         this.mailService = mailService;
         this.jwtService = jwtService;
         this.addressService = addressService;
+        this.addressRepository = addressRepository;
+        this.userAddressRepository = userAddressRepository;
     }
 
     /// <summary>
@@ -210,7 +219,6 @@ public class UserService : IUserService
 
         return usersDto;
     }
-
     public async Task<List<UserCardDto>> GetPagingUser(GetPagingUserDto getPagingUserDto)
     {
         IList<User> listUser;
@@ -278,5 +286,82 @@ public class UserService : IUserService
             default: filter &= Builders<User>.Filter.StringIn(x => x.Name, query); break;
         }
         return filter;
+    }
+    public async Task<List<ShowUserDto>> GetAllUser(string status)
+    {
+        List<User> users = (List<User>)(status == "Active" || status == "Deactive" || status == "active" || status == "deActive"
+                            ? await userRepository.FindAsync(x => x.State == status)
+                            : await userRepository.GetAllAsync());
+
+
+        List<ShowUserDto> showUserDtos = new();
+        if (users.Count > 0)
+        {
+            foreach (var user in users)
+            {
+                ShowUserDto temp = new()
+                {
+                    Id = user.Id,
+                    Name = user.Name,
+                    Email = await accountRepository.FindOneAsync(x => x.UserId == user.Id) != null ? (await accountRepository.FindOneAsync(x => x.UserId == user.Id)).Email : "Chưa có dữ liệu",
+                    Phone = user.PhoneNumber,
+                    Gender = user.Gender == true ? "Nam" : "Nữ",
+                    Status = user.State,
+                };
+                temp.Address = new();
+                if ((await userAddressRepository.FindAsync(x => x.UserId == user.Id)).Count > 0)
+                {
+                    foreach (var i in await userAddressRepository.FindAsync(x => x.UserId == user.Id))
+                    {
+                        string address = (await addressRepository.FindByIdAsync(i.AddressId)).Addrress;
+                        if (address != null) temp.Address.Add(address);
+                    }
+                }
+                else
+                {
+                    temp.Address.Add("Chưa có dữ liệu");
+                }
+                showUserDtos.Add(temp);
+            }
+        }
+
+        return showUserDtos;
+    }
+
+    public async Task<DetailsUserDto> GetUserByID(string id)
+    {
+        User user = await userRepository.FindByIdAsync(id);
+        if (user != null)
+        {
+            DetailsUserDto userDto = new()
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Email = await accountRepository.FindOneAsync(x => x.UserId == user.Id) != null ? (await accountRepository.FindOneAsync(x => x.UserId == user.Id)).Email : "Chưa có dữ liệu",
+                Phone = user.PhoneNumber,
+                Gender = user.Gender == true ? "Nam" : "Nữ",
+                Status = user.State,
+                avatar = user.Avatar != null ? user.Avatar : "chưa có dữ liệu",
+                createdDate = user.CreatedDate
+            };
+            userDto.Address = new();
+            if ((await userAddressRepository.FindAsync(x => x.UserId == user.Id)).Count > 0)
+            {
+                foreach (var i in await userAddressRepository.FindAsync(x => x.UserId == user.Id))
+                {
+                    string address = (await addressRepository.FindByIdAsync(i.AddressId)).Addrress;
+                    if (address != null) userDto.Address.Add(address);
+                }
+            }
+            else
+            {
+                userDto.Address.Add("Chưa có dữ liệu");
+            }
+            return userDto;
+        }
+        else
+        {
+            throw new Exception("không tồn tại user này");
+        }
     }
 }
