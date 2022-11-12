@@ -4,6 +4,7 @@ using AuthenticationService.Service;
 using AuthenticationService.ViewModel.Dtos;
 using AuthenticationService.ViewModel.Dtos.User;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
 
 namespace AuthenticationService.Controllers;
@@ -200,6 +201,27 @@ public class UserController : ControllerBase
         {
             return new JsonResult("Không tồn tại user này");
         }
+    }
+
+    [HttpGet]
+    [Route("FilterUser")]
+    public async Task<JsonResult> FilterUserByKey(string status, string key)
+    {
+        try
+        {
+            IEnumerable<ShowUserDto> showUserDtos = await userService.FilterByKey(status, key);
+            return new JsonResult(showUserDtos);
+        }catch(Exception e)
+        {
+            return new JsonResult(e);
+        }
+    }
+
+    [HttpDelete]
+    [Route("DeleteUser")]
+    public async Task<bool> DeleteUser([Required] string id)
+    {
+        return await userService.DeleteUser(id);
     }
 
     public string GetId()

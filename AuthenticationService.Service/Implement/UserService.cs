@@ -380,4 +380,30 @@ public class UserService : IUserService
             throw new Exception("không tồn tại user này");
         }
     }
+
+    public async Task<IEnumerable<ShowUserDto>> FilterByKey(string status, string key)
+    {
+        List<ShowUserDto> userDto = await GetAllUser(status);
+        IEnumerable<ShowUserDto> result = from user in userDto where user.Email.Contains(key) || user.Phone.Contains(key) select user;
+
+        return result;
+    }
+
+    public async Task<bool> DeleteUser(string id)
+    {
+        User user = await userRepository.FindByIdAsync(id);
+        if(user != null)
+        {
+            Account account = await accountRepository.FindOneAsync(x => x.UserId == id);
+            account.IsDeleted = true;
+            await accountRepository.UpdateAsync(account);
+            user.IsDeleted = true;
+            await userRepository.UpdateAsync(user);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 }
