@@ -239,6 +239,7 @@ public class UserService : IUserService
             total = users.Count;
         }
         var list = new List<UserCardDto>();
+        int stt = 0;
         foreach (var user in listUser)
         {
             var userAddress = addressService.GetUserAddressAsync(user.Id).Result.FirstOrDefault();
@@ -248,6 +249,7 @@ public class UserService : IUserService
             {
                 address = userAddress.Address;
             }
+            stt++;
             list.Add(new UserCardDto()
             {
                 Address = address,
@@ -256,7 +258,9 @@ public class UserService : IUserService
                 Email = account.Email,
                 Gender = user.Gender == true ? "Nam" : "Nu",
                 PhoneNumber = user.PhoneNumber,
-                Status = user.State
+                Status = user.State,
+                Stt = stt,
+                Id = stt
             });
         }
 

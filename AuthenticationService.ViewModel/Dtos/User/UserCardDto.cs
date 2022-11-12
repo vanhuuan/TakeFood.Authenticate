@@ -10,6 +10,18 @@ public class UserCardDto
     /// </summary>
     [Required]
     [FromQuery]
+    public int Stt { get; set; }
+    /// <summary>
+    /// Code/Name
+    /// </summary>
+    [Required]
+    [FromQuery]
+    public int Id { get; set; }
+    /// <summary>
+    /// Code/Name
+    /// </summary>
+    [Required]
+    [FromQuery]
     public String UserId { get; set; }
     /// <summary>
     /// Code/Name
