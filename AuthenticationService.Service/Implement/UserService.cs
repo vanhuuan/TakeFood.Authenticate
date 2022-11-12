@@ -219,21 +219,23 @@ public class UserService : IUserService
 
         return usersDto;
     }
-    public async Task<List<UserCardDto>> GetPagingUser(GetPagingUserDto getPagingUserDto)
+    public async Task<UserPagingData> GetPagingUser(GetPagingUserDto getPagingUserDto)
     {
         IList<User> listUser;
+        int total = 0;
         if (getPagingUserDto.QueryType == "Email")
         {
             var accounts = accountRepository.GetPagingAsync(Builders<Account>.Filter.StringIn(x => x.Email, getPagingUserDto.QueryString), getPagingUserDto.PageNumber - 1, getPagingUserDto.PageSize).Result.Data.Select(x => x.UserId);
             var users = await userRepository.FindAsync(x => accounts.Contains(x.Id));
             listUser = users;
-
+            total = accountRepository.GetPagingAsync(Builders<Account>.Filter.StringIn(x => x.Email, getPagingUserDto.QueryString), getPagingUserDto.PageNumber - 1, getPagingUserDto.PageSize).Result.Count;
         }
         else
         {
             var filter = CreateUserFilter(getPagingUserDto.QueryString, getPagingUserDto.QueryType);
             var users = await userRepository.GetPagingAsync(filter, getPagingUserDto.PageNumber - 1, getPagingUserDto.PageSize);
             listUser = users.Data.ToList();
+            total = users.Count;
         }
         var list = new List<UserCardDto>();
         foreach (var user in listUser)
@@ -272,8 +274,14 @@ public class UserService : IUserService
         {
             list.Reverse();
         }
-
-        return list;
+        var respone = new UserPagingData()
+        {
+            Total = total,
+            Users = list,
+            PageIndex = getPagingUserDto.PageNumber,
+            PageSize = getPagingUserDto.PageSize
+        };
+        return respone;
     }
 
     private FilterDefinition<User> CreateUserFilter(string query, string queryType)
