@@ -144,9 +144,30 @@ public class UserController : ControllerBase
         {
             JsonResult json = new JsonResult(await userService.GetNewsUser());
             return json;
-        }catch(Exception e)
+        }
+        catch (Exception e)
         {
             return new JsonResult(e);
+        }
+    }
+
+    [HttpGet]
+    [Authorize(roles: Roles.Admin)]
+    [Route("GetPagingUser")]
+    public async Task<IActionResult> GetPagingUserAsync([FromQuery] GetPagingUserDto dto)
+    {
+        try
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+            var rs = await userService.GetPagingUser(dto);
+            return Ok(rs);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
         }
     }
 

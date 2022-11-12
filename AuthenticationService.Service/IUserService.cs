@@ -38,4 +38,6 @@ public interface IUserService
     /// <returns></returns>
     Task<UserViewDto> UpdateUserInfo(UpdateUserDto updateDto, string uid);
     Task<List<NewsUserDto>> GetNewsUser();
+
+    Task<List<UserCardDto>> GetPagingUser(GetPagingUserDto getPagingUserDto);
 }

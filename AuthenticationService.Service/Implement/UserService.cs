@@ -4,6 +4,7 @@ using AuthenticationService.Model.Repository;
 using AuthenticationService.ViewModel.Dtos;
 using AuthenticationService.ViewModel.Dtos.User;
 using MongoDB.Bson;
+using MongoDB.Driver;
 using BC = BCrypt.Net.BCrypt;
 
 namespace AuthenticationService.Service.Implement;
@@ -39,6 +40,7 @@ public class UserService : IUserService
     /// Jwt Service
     /// </summary>
     private readonly IJwtService jwtService;
+    private IAddressService addressService;
 
     /// <summary>
     /// User service constructor
@@ -50,7 +52,8 @@ public class UserService : IUserService
                        IMongoRepository<Role> roleRepository,
                        IMongoRepository<Account> accountRepository,
                        IMailService mailService,
-                       IJwtService jwtService)
+                       IJwtService jwtService,
+                       IAddressService addressService)
     {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
@@ -58,6 +61,7 @@ public class UserService : IUserService
         this.accountRepository = accountRepository;
         this.mailService = mailService;
         this.jwtService = jwtService;
+        this.addressService = addressService;
     }
 
     /// <summary>
@@ -193,7 +197,7 @@ public class UserService : IUserService
 
         List<NewsUserDto> usersDto = new();
 
-        foreach(var user in allUser.Take(10))
+        foreach (var user in allUser.Take(10))
         {
             NewsUserDto newsUserDto = new()
             {
@@ -205,5 +209,74 @@ public class UserService : IUserService
         }
 
         return usersDto;
+    }
+
+    public async Task<List<UserCardDto>> GetPagingUser(GetPagingUserDto getPagingUserDto)
+    {
+        IList<User> listUser;
+        if (getPagingUserDto.QueryType == "Email")
+        {
+            var accounts = accountRepository.GetPagingAsync(Builders<Account>.Filter.StringIn(x => x.Email, getPagingUserDto.QueryString), getPagingUserDto.PageNumber - 1, getPagingUserDto.PageSize).Result.Data.Select(x => x.UserId);
+            var users = await userRepository.FindAsync(x => accounts.Contains(x.Id));
+            listUser = users;
+
+        }
+        else
+        {
+            var filter = CreateUserFilter(getPagingUserDto.QueryString, getPagingUserDto.QueryType);
+            var users = await userRepository.GetPagingAsync(filter, getPagingUserDto.PageNumber - 1, getPagingUserDto.PageSize);
+            listUser = users.Data.ToList();
+        }
+        var list = new List<UserCardDto>();
+        foreach (var user in listUser)
+        {
+            var userAddress = addressService.GetUserAddressAsync(user.Id).Result.FirstOrDefault();
+            var account = await accountRepository.FindOneAsync(x => x.UserId == user.Id);
+            var address = "";
+            if (userAddress != null)
+            {
+                address = userAddress.Address;
+            }
+            list.Add(new UserCardDto()
+            {
+                Address = address,
+                UserId = user.Id,
+                Name = user.Name,
+                Email = account.Email,
+                Gender = user.Gender == true ? "Nam" : "Nu",
+                PhoneNumber = user.PhoneNumber,
+                Status = user.State
+            });
+        }
+
+        switch (getPagingUserDto.SortBy)
+        {
+            case "Name":
+                list = list.OrderBy(x => x.Name).ToList(); break;
+            case "Email":
+                list = list.OrderBy(x => x.Email).ToList(); break;
+            case "PhoneNumber":
+                list = list.OrderBy(x => x.PhoneNumber).ToList(); break;
+            default: list = list.OrderBy(x => x.Name).ToList(); break;
+        }
+
+        if (getPagingUserDto.SortType == "Desc")
+        {
+            list.Reverse();
+        }
+
+        return list;
+    }
+
+    private FilterDefinition<User> CreateUserFilter(string query, string queryType)
+    {
+        var filter = Builders<User>.Filter.Empty;
+        switch (queryType)
+        {
+            case "PhoneNumber": filter &= Builders<User>.Filter.Where(x => x.PhoneNumber.Contains(query)); break;
+            case "Name": filter &= Builders<User>.Filter.Where(x => x.Name.Contains(query)); break;
+            default: filter &= Builders<User>.Filter.StringIn(x => x.Name, query); break;
+        }
+        return filter;
     }
 }
