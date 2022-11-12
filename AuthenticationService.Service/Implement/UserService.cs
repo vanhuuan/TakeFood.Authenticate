@@ -225,10 +225,11 @@ public class UserService : IUserService
         int total = 0;
         if (getPagingUserDto.QueryType == "Email")
         {
-            var accounts = accountRepository.GetPagingAsync(Builders<Account>.Filter.StringIn(x => x.Email, getPagingUserDto.QueryString), getPagingUserDto.PageNumber - 1, getPagingUserDto.PageSize).Result.Data.Select(x => x.UserId);
-            var users = await userRepository.FindAsync(x => accounts.Contains(x.Id));
+            var accounts = await accountRepository.GetPagingAsync(Builders<Account>.Filter.Where(x => x.Email.Contains(getPagingUserDto.QueryString)), getPagingUserDto.PageNumber - 1, getPagingUserDto.PageSize);
+            var listAcountsId = accounts.Data.Select(x => x.Id);
+            var users = await userRepository.FindAsync(x => listAcountsId.Contains(x.Id));
             listUser = users;
-            total = accountRepository.GetPagingAsync(Builders<Account>.Filter.StringIn(x => x.Email, getPagingUserDto.QueryString), getPagingUserDto.PageNumber - 1, getPagingUserDto.PageSize).Result.Count;
+            total = accounts.Count;
         }
         else
         {
