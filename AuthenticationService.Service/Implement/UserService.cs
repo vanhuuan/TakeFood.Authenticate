@@ -226,7 +226,7 @@ public class UserService : IUserService
         if (getPagingUserDto.QueryType == "Email")
         {
             var accounts = await accountRepository.GetPagingAsync(Builders<Account>.Filter.Where(x => x.Email.Contains(getPagingUserDto.QueryString)), getPagingUserDto.PageNumber - 1, getPagingUserDto.PageSize);
-            var listAcountsId = accounts.Data.Select(x => x.Id);
+            var listAcountsId = accounts.Data.Select(x => x.UserId);
             var users = await userRepository.FindAsync(x => listAcountsId.Contains(x.Id));
             listUser = users;
             total = accounts.Count;
