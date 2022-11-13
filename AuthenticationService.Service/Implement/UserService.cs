@@ -248,16 +248,19 @@ public class UserService : IUserService
             {
                 address = userAddress.Address;
             }
-            list.Add(new UserCardDto()
+            if (account != null)
             {
-                Address = address,
-                UserId = user.Id,
-                Name = user.Name,
-                Email = account.Email,
-                Gender = user.Gender == true ? "Nam" : "Nu",
-                PhoneNumber = user.PhoneNumber,
-                Status = user.State,
-            });
+                list.Add(new UserCardDto()
+                {
+                    Address = address,
+                    UserId = user.Id,
+                    Name = user.Name,
+                    Email = account.Email,
+                    Gender = user.Gender == true ? "Nam" : "Nu",
+                    PhoneNumber = user.PhoneNumber,
+                    Status = user.State,
+                });
+            }
         }
 
         switch (getPagingUserDto.SortBy)
@@ -295,11 +298,14 @@ public class UserService : IUserService
     private FilterDefinition<User> CreateUserFilter(string query, string queryType)
     {
         var filter = Builders<User>.Filter.Empty;
-        switch (queryType)
+        if (queryType != "All")
         {
-            case "PhoneNumber": filter &= Builders<User>.Filter.Where(x => x.PhoneNumber.Contains(query)); break;
-            case "Name": filter &= Builders<User>.Filter.Where(x => x.Name.Contains(query)); break;
-            default: filter &= Builders<User>.Filter.StringIn(x => x.Name, query); break;
+            switch (queryType)
+            {
+                case "PhoneNumber": filter &= Builders<User>.Filter.Where(x => x.PhoneNumber.Contains(query)); break;
+                case "Name": filter &= Builders<User>.Filter.Where(x => x.Name.Contains(query)); break;
+                default: filter &= Builders<User>.Filter.StringIn(x => x.Name, query); break;
+            }
         }
         return filter;
     }
@@ -392,7 +398,7 @@ public class UserService : IUserService
     public async Task<bool> DeleteUser(string id)
     {
         User user = await userRepository.FindByIdAsync(id);
-        if(user != null)
+        if (user != null)
         {
             Account account = await accountRepository.FindOneAsync(x => x.UserId == id);
             account.IsDeleted = true;
