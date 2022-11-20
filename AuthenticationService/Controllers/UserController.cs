@@ -211,7 +211,8 @@ public class UserController : ControllerBase
         {
             IEnumerable<ShowUserDto> showUserDtos = await userService.FilterByKey(status, key);
             return new JsonResult(showUserDtos);
-        }catch(Exception e)
+        }
+        catch (Exception e)
         {
             return new JsonResult(e);
         }
@@ -219,9 +220,32 @@ public class UserController : ControllerBase
 
     [HttpDelete]
     [Route("DeleteUser")]
-    public async Task<bool> DeleteUser([Required] string id)
+    public async Task<IActionResult> DeleteUser([Required] string id)
     {
-        return await userService.DeleteUser(id);
+        try
+        {
+            await userService.DeleteUser(id);
+            return Ok();
+        }
+        catch (Exception err)
+        {
+            return BadRequest(err.Message);
+        }
+    }
+    [HttpPut]
+    [Authorize(roles: Roles.Admin)]
+    [Route("ChangeUserStatus")]
+    public async Task<IActionResult> ChangeUserStatus([Required][FromQuery] string id)
+    {
+        try
+        {
+            await userService.ChangeUserStatus(id);
+            return Ok();
+        }
+        catch (Exception err)
+        {
+            return BadRequest(err.Message);
+        }
     }
 
     public string GetId()

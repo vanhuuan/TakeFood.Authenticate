@@ -412,4 +412,26 @@ public class UserService : IUserService
             return false;
         }
     }
+
+    public async Task ChangeUserStatus(string uid)
+    {
+        User user = await userRepository.FindByIdAsync(uid);
+        if (user != null)
+        {
+            if (user.State == "Active")
+            {
+                user.State = "InActive";
+            }
+            else
+            {
+                user.State = "Active";
+            }
+            await userRepository.UpdateAsync(user);
+            return;
+        }
+        else
+        {
+            return;
+        }
+    }
 }

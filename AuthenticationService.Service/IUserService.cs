@@ -43,4 +43,5 @@ public interface IUserService
     Task<DetailsUserDto> GetUserByID(string id);
     Task<IEnumerable<ShowUserDto>> FilterByKey(string status, string key);
     Task<bool> DeleteUser(string id);
+    Task ChangeUserStatus(string uid);
 }
