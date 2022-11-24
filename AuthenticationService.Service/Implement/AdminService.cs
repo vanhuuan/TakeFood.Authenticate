@@ -199,12 +199,7 @@ public class AdminService : IAdminService
 
     public async Task RemoveAdmin(string adminId)
     {
-        var account = await accountRepository.FindOneAsync(x => x.Email == adminId);
-        if (account == null)
-        {
-            throw new Exception("User's not exist");
-        }
-        var user = await userRepository.FindByIdAsync(account.UserId);
+        var user = await userRepository.FindOneAsync(x => x.Id == adminId);
         if (user == null)
         {
             throw new Exception("User's not exist");
