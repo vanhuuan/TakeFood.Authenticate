@@ -1018,4 +1018,29 @@ public partial class MongoRepository<T>
         var rs = new PagingData<T>((int)count, data);
         return rs;
     }
+
+    public async Task<PagingData<T>> GetPagingAsync(FilterDefinition<T> filter, int pageNumber, int pageSize, SortDefinition<T> sort, bool includeIsDeleted = false)
+    {
+        IList<T> data;
+        if (!includeIsDeleted)
+        {
+            filter = filter != null ? filter & Builders<T>.Filter.Where(m => !m.IsDeleted) : Builders<T>.Filter.Where(m => !m.IsDeleted);
+        }
+        if (filter == null)
+        {
+            filter = Builders<T>.Filter.Where(m => !m.IsDeleted || m.IsDeleted);
+        }
+        var count = await Collection.CountDocumentsAsync(filter);
+
+        if (sort != null)
+        {
+            data = Collection.Find(filter).Sort(sort).Skip(pageNumber * pageSize).Limit(pageSize).ToList();
+        }
+        else
+        {
+            data = Collection.Find(filter).Skip(pageNumber * pageSize).Limit(pageSize).ToList();
+        }
+        var rs = new PagingData<T>((int)count, data);
+        return rs;
+    }
 }

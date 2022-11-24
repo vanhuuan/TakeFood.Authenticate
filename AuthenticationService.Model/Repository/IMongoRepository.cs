@@ -320,4 +320,5 @@ public interface IMongoRepository<T> : IRepository<T>
     /// <param name="limit"></param>
     /// <returns></returns>
     Task<List<TValue>> FindSpecificFieldAsync<TEntity, TValue>(FilterDefinition<T> filter, Expression<Func<T, TValue>> fieldExpression, SortDefinition<T> sort, int? start = null, int? limit = null, bool isDelete = false) where TEntity : T;
+    Task<PagingData<T>> GetPagingAsync(FilterDefinition<T> filter, int pageNumber, int pageSize, SortDefinition<T> sort, bool includeIsDeleted = false);
 }

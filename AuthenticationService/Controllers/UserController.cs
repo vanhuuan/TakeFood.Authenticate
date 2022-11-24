@@ -13,12 +13,14 @@ public class UserController : ControllerBase
 {
     private IAddressService addressService;
     private IUserService userService;
+    private IAdminService adminService;
     private IJwtService jwtService { get; set; }
-    public UserController(IAddressService addressService, IJwtService jwtService, IUserService userService)
+    public UserController(IAddressService addressService, IJwtService jwtService, IUserService userService, IAdminService adminService)
     {
         this.addressService = addressService;
         this.jwtService = jwtService;
         this.userService = userService;
+        this.adminService = adminService;
     }
 
     [HttpPost]
@@ -245,6 +247,66 @@ public class UserController : ControllerBase
         catch (Exception err)
         {
             return BadRequest(err.Message);
+        }
+    }
+
+    [HttpGet]
+    [Authorize(roles: Roles.Admin)]
+    [Route("GetPagingAdmin")]
+    public async Task<IActionResult> GetPagingAdminAsync([FromQuery] GetPagingUserDto dto)
+    {
+        try
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+            var rs = await adminService.GetPagingUser(dto);
+            return Ok(rs);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [HttpPut]
+    [Authorize(roles: Roles.Admin)]
+    [Route("MakeAdmin")]
+    public async Task<IActionResult> MakeAdmin([FromQuery] string userEmail)
+    {
+        try
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+            await adminService.MakeAdmin(userEmail);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [HttpDelete]
+    [Authorize(roles: Roles.Admin)]
+    [Route("RemoveAdmin")]
+    public async Task<IActionResult> RemoveAdmin([FromQuery] string userId)
+    {
+        try
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+            await adminService.MakeAdmin(userId);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
         }
     }
 
