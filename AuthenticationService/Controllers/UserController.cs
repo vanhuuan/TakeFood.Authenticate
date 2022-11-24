@@ -301,7 +301,7 @@ public class UserController : ControllerBase
             {
                 return BadRequest();
             }
-            await adminService.MakeAdmin(userId);
+            await adminService.RemoveAdmin(userId);
             return Ok();
         }
         catch (Exception e)
