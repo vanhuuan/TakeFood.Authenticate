@@ -1,11 +1,9 @@
-﻿using AuthenticationService.Middleware;
+using AuthenticationService.Middleware;
 using AuthenticationService.Model.Entities;
 using AuthenticationService.Service;
 using AuthenticationService.ViewModel.Dtos;
 using AuthenticationService.ViewModel.Dtos.User;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
-using System.Runtime.InteropServices;
 
 namespace AuthenticationService.Controllers;
 
@@ -13,14 +11,12 @@ public class UserController : ControllerBase
 {
     private IAddressService addressService;
     private IUserService userService;
-    private IAdminService adminService;
     private IJwtService jwtService { get; set; }
-    public UserController(IAddressService addressService, IJwtService jwtService, IUserService userService, IAdminService adminService)
+    public UserController(IAddressService addressService, IJwtService jwtService, IUserService userService)
     {
         this.addressService = addressService;
         this.jwtService = jwtService;
         this.userService = userService;
-        this.adminService = adminService;
     }
 
     [HttpPost]
@@ -104,7 +100,6 @@ public class UserController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize]
     [Route("GetUserInfo")]
     public async Task<ActionResult<UserViewDto>> GetUserAsync()
     {
@@ -121,7 +116,6 @@ public class UserController : ControllerBase
     }
 
     [HttpPut]
-    [Authorize]
     [Route("UpdateInfo")]
     public async Task<IActionResult> UpdateUserInfo([FromBody] UpdateUserDto info)
     {
@@ -139,7 +133,7 @@ public class UserController : ControllerBase
             return BadRequest(e.Message);
         }
     }
-
+    
     [HttpGet]
     [Route("GetNewsUser")]
     public async Task<JsonResult> GetNewsUser()
@@ -312,11 +306,8 @@ public class UserController : ControllerBase
 
     public string GetId()
     {
-        String token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last()!;
-        return jwtService.GetId(token);
-    }
-    public string GetId(string token)
-    {
-        return jwtService.GetId(token);
+        String id = HttpContext.Items["Id"]!.ToString()!;
+        return id;
     }
 }
+

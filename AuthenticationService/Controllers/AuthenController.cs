@@ -95,7 +95,7 @@ public class AuthenController : Controller
             {
                 return BadRequest("Token expired");
             }
-            var id = GetId(token);
+            var id = GetId();
             var rs = await UserService.GetUserByIdAsync(id);
             var accessToken = JwtService.GenerateSecurityToken(id, rs.Roles);
             rs.AccessToken = accessToken;
@@ -137,11 +137,7 @@ public class AuthenController : Controller
 
     public string GetId()
     {
-        String token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last()!;
-        return JwtService.GetId(token);
-    }
-    public string GetId(string token)
-    {
-        return JwtService.GetId(token);
+        String id = HttpContext.Items["Id"]!.ToString()!;
+        return id;
     }
 }
