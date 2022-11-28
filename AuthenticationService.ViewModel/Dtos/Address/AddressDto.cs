@@ -16,29 +16,29 @@ public class AddressDto
     /// </summary>
     [JsonPropertyName("information")]
     [Required]
-    public string Information;
+    public string Information { get; set; }
     /// <summary>
     /// Address of place
     /// </summary>
     [JsonPropertyName("address")]
     [Required]
-    public string Address;
+    public string Address { get; set; }
     /// <summary>
     /// Address Type
     /// </summary>
     [JsonPropertyName("addressType")]
     [Required]
-    public string AddressType;
+    public string AddressType { get; set; }
     /// <summary>
     /// Latitude
     /// </summary>
     [JsonPropertyName("lat")]
     [Required]
-    public double Lat;
+    public double Lat { get; set; }
     /// <summary>
     /// Longitude
     /// </summary>
     [JsonPropertyName("lng")]
     [Required]
-    public double Lng;
+    public double Lng { get; set; }
 }

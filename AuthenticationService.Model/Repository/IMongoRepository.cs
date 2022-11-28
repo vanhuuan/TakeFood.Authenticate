@@ -1,4 +1,5 @@
-﻿using AuthenticationService.Model.Entities;
+﻿using AuthenticationService.Model.Content;
+using AuthenticationService.Model.Entities;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using System.Linq.Expressions;
@@ -218,22 +219,7 @@ public interface IMongoRepository<T> : IRepository<T>
     /// <param name="start"></param>
     /// <param name="limit"></param>
     /// <returns></returns>
-    /*Task<PagingData<T>> GetPagingDataAsync(FilterDefinition<T> filter, FindOptions options = null, int? start = null, int? limit = null);*/
-
-    /// <summary>
-    /// GetPaging
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="filter"></param>
-    /// <param name="pageNumber"></param>
-    /// <param name="pageSize"></param>
-    /// <param name="rowsCount"></param>
-    /// <param name="includeIsDeleted">Có tìm field đã xóa không</param>
-    /// <param name="sortColumn"></param>
-    /// <param name="sortType"></param>
-    /// <param name="partitionKey"></param>
-    /// <returns></returns>
-    /*   Task<PagingData<T>> GetPagingAsync(FilterDefinition<T> filter, int pageNumber, int pageSize, string sortColumn = "", string sortType = CommonConstants.SortTypeASC, bool includeIsDeleted = false);*/
+    Task<PagingData<T>> GetPagingDataAsync(FilterDefinition<T> filter, FindOptions options = null, int? start = null, int? limit = null);
 
     /// <summary>
     /// Get paging
@@ -243,7 +229,7 @@ public interface IMongoRepository<T> : IRepository<T>
     /// <param name="pageNumber"></param>
     /// <param name="pageSize"></param>
     /// <returns></returns>
-    /*Task<PagingData<T>> GetPagingAsync(FilterDefinition<T> filter, int pageNumber, int pageSize, SortDefinition<T> sort, bool includeIsDeleted = false);*/
+    Task<PagingData<T>> GetPagingAsync(FilterDefinition<T> filter, int pageNumber, int pageSize, bool includeIsDeleted = false);
 
     /// <summary>
     /// Update entity
@@ -334,4 +320,5 @@ public interface IMongoRepository<T> : IRepository<T>
     /// <param name="limit"></param>
     /// <returns></returns>
     Task<List<TValue>> FindSpecificFieldAsync<TEntity, TValue>(FilterDefinition<T> filter, Expression<Func<T, TValue>> fieldExpression, SortDefinition<T> sort, int? start = null, int? limit = null, bool isDelete = false) where TEntity : T;
+    Task<PagingData<T>> GetPagingAsync(FilterDefinition<T> filter, int pageNumber, int pageSize, SortDefinition<T> sort, bool includeIsDeleted = false);
 }

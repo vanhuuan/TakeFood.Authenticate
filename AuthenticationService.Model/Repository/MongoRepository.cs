@@ -1,4 +1,5 @@
-﻿using AuthenticationService.Model.Entities;
+﻿using AuthenticationService.Model.Content;
+using AuthenticationService.Model.Entities;
 using AuthenticationService.Utilities.Helper;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -935,5 +936,111 @@ public partial class MongoRepository<T>
     public async Task<IList<T>> GetAllAsync()
     {
         return await Collection.Find(x => true).ToListAsync();
+    }
+
+    /// <summary>
+    /// Get paging data
+    /// </summary>
+    /// <param name="filter"></param>
+    /// <param name="start"></param>
+    /// <param name="limit"></param>
+    /// <returns></returns>
+    public async Task<PagingData<T>> GetPagingDataAsync(FilterDefinition<T> filter, FindOptions options = null, int? start = null, int? limit = null)
+    {
+        var count = (int)Collection.Find(filter, options).CountDocuments();
+        PagingData<T> rs = new PagingData<T>(count, null);
+        filter = Builders<T>.Filter.And(filter, Builders<T>.Filter.Where(e => e.IsDeleted == false));
+        if (start != null && start.Value > -1 && limit != null && limit.Value > 0)
+        {
+            rs.Data = await Collection.Find(filter, options).Skip(start).Limit(limit).ToListAsync();
+        }
+        else
+        {
+            rs.Data = await Collection.Find(filter, options).ToListAsync();
+        }
+        return rs;
+    }
+
+
+    /// <summary>
+    /// Get paging data
+    /// </summary>
+    /// <param name="filter"></param>
+    /// <param name="start"></param>
+    /// <param name="limit"></param>
+    /// <returns></returns>
+    public async Task<PagingData<T>> GetPagingDataAsync(Expression<Func<T, bool>> filter = null, int? start = null, int? limit = null)
+    {
+        var count = await CountAsync(filter);
+        PagingData<T> rs = new PagingData<T>(count, null);
+        var query = Elements.Where(e => true);
+        if (filter != null)
+        {
+            query = query.Where(filter);
+        }
+        if (start != null && start.Value > -1 && limit != null && limit.Value > 0)
+        {
+            rs.Data = await query.Skip(start.Value).Take(limit.Value).ToListAsync();
+        }
+        else
+        {
+            rs.Data = await query.ToListAsync();
+        }
+        return rs;
+    }
+
+    /// <summary>
+    /// Get paging
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="filter"></param>
+    /// <param name="pageNumber"></param>
+    /// <param name="pageSize"></param>
+    /// <param name="rowsCount"></param>
+    /// <param name="sortColumn"></param>
+    /// <param name="sortType"></param>
+    /// <param name="partitionKey"></param>
+    /// <returns></returns>
+    public async Task<PagingData<T>> GetPagingAsync(FilterDefinition<T> filter, int pageNumber, int pageSize, bool includeIsDeleted = false)
+    {
+        IList<T> data;
+        if (!includeIsDeleted)
+        {
+            filter = filter != null ? filter & Builders<T>.Filter.Where(m => !m.IsDeleted) : Builders<T>.Filter.Where(m => !m.IsDeleted);
+        }
+        if (filter == null)
+        {
+            filter = Builders<T>.Filter.Where(m => !m.IsDeleted || m.IsDeleted);
+        }
+        var count = await Collection.CountDocumentsAsync(filter);
+        // Handle sort
+        data = Collection.Find(filter).Skip(pageNumber * pageSize).Limit(pageSize).ToList();
+        var rs = new PagingData<T>((int)count, data);
+        return rs;
+    }
+
+    public async Task<PagingData<T>> GetPagingAsync(FilterDefinition<T> filter, int pageNumber, int pageSize, SortDefinition<T> sort, bool includeIsDeleted = false)
+    {
+        IList<T> data;
+        if (!includeIsDeleted)
+        {
+            filter = filter != null ? filter & Builders<T>.Filter.Where(m => !m.IsDeleted) : Builders<T>.Filter.Where(m => !m.IsDeleted);
+        }
+        if (filter == null)
+        {
+            filter = Builders<T>.Filter.Where(m => !m.IsDeleted || m.IsDeleted);
+        }
+        var count = await Collection.CountDocumentsAsync(filter);
+
+        if (sort != null)
+        {
+            data = Collection.Find(filter).Sort(sort).Skip(pageNumber * pageSize).Limit(pageSize).ToList();
+        }
+        else
+        {
+            data = Collection.Find(filter).Skip(pageNumber * pageSize).Limit(pageSize).ToList();
+        }
+        var rs = new PagingData<T>((int)count, data);
+        return rs;
     }
 }

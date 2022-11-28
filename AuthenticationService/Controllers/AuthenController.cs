@@ -73,6 +73,8 @@ public class AuthenController : Controller
             }
             var refreshToken = JwtService.GenerateRefreshToken(rs.Id);
             var accessToken = JwtService.GenerateSecurityToken(rs.Id, rs.Roles);
+            rs.RefreshToken = refreshToken;
+            rs.AccessToken = accessToken;
             SetTokenCookie(refreshToken, accessToken);
             return Ok(rs);
         }
@@ -96,8 +98,9 @@ public class AuthenController : Controller
             var id = GetId();
             var rs = await UserService.GetUserByIdAsync(id);
             var accessToken = JwtService.GenerateSecurityToken(id, rs.Roles);
+            rs.AccessToken = accessToken;
             SetTokenCookie(token, accessToken);
-            return Ok();
+            return Ok(rs);
         }
         catch (Exception e)
         {

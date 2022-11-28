@@ -12,5 +12,4 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 startup.Configure(app);
-
 app.Run();

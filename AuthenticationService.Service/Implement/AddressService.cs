@@ -47,8 +47,8 @@ public class AddressService : IAddressService
 
     public async Task<List<AddressDto>> GetUserAddressAsync(string uid)
     {
-        var addressId = await userAddressRepository.FindAsync(x => x.UserId == uid);
-        var addresses = await addressRepository.FindAsync(x => addressId.Select(y => y.AddressId).Contains(x.Id));
+        var addressId = userAddressRepository.FindAsync(x => x.UserId == uid).Result.Select(x => x.AddressId);
+        var addresses = await addressRepository.FindAsync(x => addressId.Contains(x.Id));
 
         var rs = new List<AddressDto>();
         foreach (var address in addresses)
@@ -56,7 +56,7 @@ public class AddressService : IAddressService
             rs.Add(new AddressDto()
             {
                 AddressId = address.Id,
-                Address = address.AddressType,
+                Address = address.Addrress,
                 AddressType = address.AddressType,
                 Information = address.Information,
                 Lat = address.Lat,
