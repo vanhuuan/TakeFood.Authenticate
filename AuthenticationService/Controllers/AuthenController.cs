@@ -93,7 +93,7 @@ public class AuthenController : Controller
             {
                 return BadRequest("Token expired");
             }
-            var id = GetId(token);
+            var id = GetId();
             var rs = await UserService.GetUserByIdAsync(id);
             var accessToken = JwtService.GenerateSecurityToken(id, rs.Roles);
             SetTokenCookie(token, accessToken);
