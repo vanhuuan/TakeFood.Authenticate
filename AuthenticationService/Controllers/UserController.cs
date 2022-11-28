@@ -4,6 +4,8 @@ using AuthenticationService.Service;
 using AuthenticationService.ViewModel.Dtos;
 using AuthenticationService.ViewModel.Dtos.User;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
+using System.Runtime.InteropServices;
 
 namespace AuthenticationService.Controllers;
 
@@ -11,12 +13,14 @@ public class UserController : ControllerBase
 {
     private IAddressService addressService;
     private IUserService userService;
+    private IAdminService adminService;
     private IJwtService jwtService { get; set; }
-    public UserController(IAddressService addressService, IJwtService jwtService, IUserService userService)
+    public UserController(IAddressService addressService, IJwtService jwtService, IUserService userService, IAdminService adminService)
     {
         this.addressService = addressService;
         this.jwtService = jwtService;
         this.userService = userService;
+        this.adminService = adminService;
     }
 
     [HttpPost]
@@ -133,7 +137,7 @@ public class UserController : ControllerBase
             return BadRequest(e.Message);
         }
     }
-    
+
     [HttpGet]
     [Route("GetNewsUser")]
     public async Task<JsonResult> GetNewsUser()
