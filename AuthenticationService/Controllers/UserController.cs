@@ -1,5 +1,3 @@
-using AuthenticationService.Middleware;
-using AuthenticationService.Model.Entities;
 using AuthenticationService.Service;
 using AuthenticationService.ViewModel.Dtos;
 using AuthenticationService.ViewModel.Dtos.User;
@@ -24,7 +22,6 @@ public class UserController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize]
     [Route("AddAddress")]
     public async Task<IActionResult> AddNewAddress([FromBody] AddAddressDto address)
     {
@@ -44,7 +41,6 @@ public class UserController : ControllerBase
     }
 
     [HttpPut]
-    [Authorize]
     [Route("UpdateAddress")]
     public async Task<IActionResult> UpdateAddress([FromBody] UpdateAddressDto address)
     {
@@ -64,7 +60,6 @@ public class UserController : ControllerBase
     }
 
     [HttpDelete]
-    [Authorize]
     [Route("DeleteAdderss")]
     public async Task<IActionResult> DeleteAddressAsync(string addressId)
     {
@@ -84,7 +79,6 @@ public class UserController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize(roles: Roles.User)]
     [Route("GetAddress")]
     public async Task<ActionResult<IList<AddAddressDto>>> GetUserAddress()
     {
@@ -154,7 +148,6 @@ public class UserController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize(roles: Roles.Admin)]
     [Route("GetPagingUser")]
     public async Task<IActionResult> GetPagingUserAsync([FromQuery] GetPagingUserDto dto)
     {
@@ -233,7 +226,6 @@ public class UserController : ControllerBase
         }
     }
     [HttpPut]
-    [Authorize(roles: Roles.Admin)]
     [Route("ChangeUserStatus")]
     public async Task<IActionResult> ChangeUserStatus([Required][FromQuery] string id)
     {
@@ -249,7 +241,6 @@ public class UserController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize(roles: Roles.Admin)]
     [Route("GetPagingAdmin")]
     public async Task<IActionResult> GetPagingAdminAsync([FromQuery] GetPagingUserDto dto)
     {
@@ -269,7 +260,6 @@ public class UserController : ControllerBase
     }
 
     [HttpPut]
-    [Authorize(roles: Roles.Admin)]
     [Route("MakeAdmin")]
     public async Task<IActionResult> MakeAdmin([FromQuery] string userEmail)
     {
@@ -289,7 +279,6 @@ public class UserController : ControllerBase
     }
 
     [HttpDelete]
-    [Authorize(roles: Roles.Admin)]
     [Route("RemoveAdmin")]
     public async Task<IActionResult> RemoveAdmin([FromQuery] string userId)
     {
@@ -312,6 +301,10 @@ public class UserController : ControllerBase
     {
         String id = HttpContext.Items["Id"]!.ToString()!;
         return id;
+    }
+    public string GetId(string token)
+    {
+        return jwtService.GetId(token);
     }
 }
 
