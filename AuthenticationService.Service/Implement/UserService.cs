@@ -127,7 +127,7 @@ public class UserService : IUserService
             Name = createUserDto.Name,
             PhoneNumber = createUserDto.PhoneNumber,
             RoleIds = new List<String>() { "2" },
-            State = "Active",
+            State = "InActive",
             UpdatedDate = DateTime.Now,
             CreatedDate = DateTime.Now,
         };
@@ -433,5 +433,26 @@ public class UserService : IUserService
         {
             return;
         }
+    }
+
+    public async Task<UserViewDto> GetUserByEmail(string email)
+    {
+        var acc = await accountRepository.FindOneAsync(x => x.Email == email);
+        if (acc == null)
+        {
+            throw new Exception("Account's not exist");
+        }
+        return await GetUserByIdAsync(acc.UserId);
+    }
+
+    public async Task RenewPassword(RenewPasswordDto dto)
+    {
+        var acc = await accountRepository.FindOneAsync(x => x.Email == dto.Email);
+        if (acc == null)
+        {
+            throw new Exception("Account's not exist");
+        }
+        acc.Password = BC.HashPassword(dto.Password);
+        await accountRepository.UpdateAsync(acc);
     }
 }

@@ -5,7 +5,6 @@ namespace AuthenticationService.Middleware;
 public class AuthenticationMiddleware
 {
     private readonly RequestDelegate _next;
-
     public AuthenticationMiddleware(RequestDelegate next)
     {
         _next = next;

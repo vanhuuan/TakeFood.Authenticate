@@ -57,6 +57,33 @@ public class JwtService : IJwtService
         return tokenHandler.WriteToken(token);
     }
 
+    public string GenerateRenewToken(string id)
+    {
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var key = Encoding.UTF8.GetBytes(_secret2);
+        var tokenDescriptor = new SecurityTokenDescriptor
+        {
+            Subject = new ClaimsIdentity(new[]
+            {
+                new Claim("UId", id.ToString()),
+                new Claim("Type", "Refresh")
+            }),
+            IssuedAt = DateTime.Now,
+            Expires = DateTime.UtcNow.AddMinutes(10),
+            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+        };
+
+        var token = tokenHandler.CreateToken(tokenDescriptor);
+        userRefreshTokenRepository.InsertAsync(new UserRefreshToken()
+        {
+            CreatedDate = DateTime.UtcNow,
+            UpdatedDate = DateTime.UtcNow,
+            Token = tokenHandler.WriteToken(token),
+            UserId = id,
+        });
+        return tokenHandler.WriteToken(token);
+    }
+
     public string GenerateSecurityToken(string id, IList<String> roles)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
@@ -98,7 +125,7 @@ public class JwtService : IJwtService
         {
             JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
             JwtSecurityToken jwtToken = tokenHandler.ReadToken(token) as JwtSecurityToken;
-            return JsonSerializer.Deserialize<List<String>>(jwtToken.Claims.FirstOrDefault(claim => claim.Type == "Roles").Value);
+            return JsonSerializer.Deserialize<List<String>>(json: jwtToken.Claims.FirstOrDefault(claim => claim.Type == "Roles").Value);
         }
         catch (Exception e)
         {
@@ -108,6 +135,35 @@ public class JwtService : IJwtService
     }
 
     public bool ValidRefreshToken(String _token)
+    {
+        try
+        {
+            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+            JwtSecurityToken jwtToken = tokenHandler.ReadToken(_token) as JwtSecurityToken;
+            UserRefreshToken token = new UserRefreshToken
+            {
+                Token = _token,
+                UserId = GetId(_token)
+            };
+            var key = Encoding.UTF8.GetBytes(_secret2);
+            tokenHandler.ValidateToken(token.Token, new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ValidateLifetime = true
+            }, out SecurityToken validatedRefreshToken);
+            return true;
+        }
+        catch (SecurityTokenExpiredException e)
+        {
+            Console.WriteLine(e.Message);
+            throw new Exception(e.Message);
+        }
+    }
+
+    public bool ValidRenewToken(string _token)
     {
         try
         {

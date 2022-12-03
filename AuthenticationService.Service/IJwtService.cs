@@ -39,4 +39,15 @@ public interface IJwtService
     /// </summary>
     /// <returns></returns>
     List<string> GetRoles(string token);
+    /// <summary>
+    /// Generate Renew Token
+    /// </summary>
+    /// <returns></returns>
+    string GenerateRenewToken(string id);
+
+    /// <summary>
+    /// Valid Renew Token
+    /// </summary>
+    /// <returns></returns>
+    bool ValidRenewToken(String token);
 }

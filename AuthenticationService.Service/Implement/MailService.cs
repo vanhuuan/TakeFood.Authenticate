@@ -1,5 +1,6 @@
 ﻿using AuthenticationService.Model.Content;
 using AuthenticationService.Settings;
+using System.Collections;
 using System.Net;
 using System.Net.Mail;
 
@@ -8,6 +9,7 @@ namespace AuthenticationService.Service.Implement;
 public class MailService : IMailService
 {
     private readonly MailSettings mailSettings;
+    private readonly String MailPass;
 
 
     // mailSetting được Inject qua dịch vụ hệ thống
@@ -15,6 +17,9 @@ public class MailService : IMailService
     public MailService(AppSetting settings)
     {
         mailSettings = settings.MailSettings;
+        foreach (DictionaryEntry de in Environment.GetEnvironmentVariables())
+            Console.WriteLine("  {0} = {1}", de.Key, de.Value);
+        MailPass = Environment.GetEnvironmentVariable("MailPass") ?? mailSettings.Password;
     }
 
     // Gửi email, theo nội dung trong mailContent
@@ -27,7 +32,7 @@ public class MailService : IMailService
                 client.EnableSsl = true;
                 client.DeliveryMethod = SmtpDeliveryMethod.Network;
                 client.UseDefaultCredentials = false;
-                client.Credentials = new NetworkCredential(mailSettings.Mail, mailSettings.Password);
+                client.Credentials = new NetworkCredential(mailSettings.Mail, MailPass);
                 MailMessage mailMessage = new MailMessage();
                 mailMessage.To.Add(mailContent.To);
                 mailMessage.From = new MailAddress(mailSettings.Mail);
@@ -38,8 +43,7 @@ public class MailService : IMailService
             }
             catch (Exception ex)
             {
-                // Gửi mail thất bại, nội dung email sẽ lưu vào thư mục mailssave
-                System.IO.Directory.CreateDirectory("mailssave");
+                Directory.CreateDirectory("mailssave");
                 var emailsavefile = string.Format(@"mailssave/{0}.eml", Guid.NewGuid());
                 client.Dispose();
             }

@@ -46,7 +46,7 @@ public class AuthenController : Controller
             var mail = new MailContent();
             mail.Subject = "Take Food Activation Email";
             mail.To = user.Email;
-            mail.Body = url + "Active?token=" + accessToken;
+            mail.Body = $"\r\nHello {user.Name},\r\n\r\nThank you for joining TakeFood.\r\n\r\nWe’d like to confirm that your account was created successfully. To active click the link below.\r\n\r {url + "Active?token=" + accessToken} \r\n\r\nBest,\r\nThe TakeFood team";
             await MailService.SendMail(mail);
             return Ok();
         }
@@ -134,6 +134,60 @@ public class AuthenController : Controller
         Response.Cookies.Append("AccessToken", accessToken, cookieOptions);
     }
 
+    [HttpGet]
+    [Route("ForgetPass")]
+    public async Task<ActionResult<UserViewDto>> ForgetpassAsync([FromQuery][Required] string gmail)
+    {
+        try
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+            var rs = await UserService.GetUserByEmail(gmail);
+            if (rs == null)
+            {
+                throw new Exception("User existed");
+            }
+
+            var accessToken = JwtService.GenerateRenewToken(rs.Id);
+            var mail = new MailContent();
+            mail.Subject = "Take Food Activation Email";
+            mail.To = rs.Email;
+            mail.Body = $"\r\nHello {rs.Name},\r\n\r\nThank you for using TakeFood.\r\n\r\n. To renew your password click the link below.\r\n\r {url + "Active?token=" + accessToken} \r\n\r\nBest,\r\nThe TakeFood team";
+            await MailService.SendMail(mail);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [HttpPost]
+    [Route("RenewPassword")]
+    public async Task<ActionResult<UserViewDto>> RenewPasswordAsync([FromBody] RenewPasswordDto user)
+    {
+        try
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+            var rs = JwtService.ValidRenewToken(user.Token);
+            if (!rs)
+            {
+                BadRequest("Invalid token");
+            }
+            await UserService.RenewPassword(user);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.ToString());
+            return BadRequest(e.Message);
+        }
+    }
 
     public string GetId()
     {
