@@ -13,6 +13,7 @@ public class AuthenController : Controller
     // private string url = "https://localhost:7287/";
 
     private string url = "https://takefoodauthentication.azurewebsites.net/";
+    private string urlWeb = "https://takefoodstore.web.app/";
     public IUserService UserService { get; set; }
 
     public IJwtService JwtService { get; set; }
@@ -154,7 +155,8 @@ public class AuthenController : Controller
             var mail = new MailContent();
             mail.Subject = "Take Food Activation Email";
             mail.To = rs.Email;
-            mail.Body = $"\r\nHello {rs.Name},\r\n\r\nThank you for using TakeFood.\r\n\r\n. To renew your password click the link below.\r\n\r {url + "Active?token=" + accessToken} \r\n\r\nBest,\r\nThe TakeFood team";
+            mail.Body = $"\r\nHello {rs.Name},\r\n\r\nThank you for using TakeFood.\r\n\r\n. To renew your password click the link below.\r\n\r " +
+                $"{urlWeb + "forgotPassword?token=" + accessToken}&email={gmail} \r\n\r\nBest,\r\nThe TakeFood team";
             await MailService.SendMail(mail);
             return Ok();
         }
