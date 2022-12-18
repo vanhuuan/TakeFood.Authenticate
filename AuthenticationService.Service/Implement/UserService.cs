@@ -191,8 +191,18 @@ public class UserService : IUserService
         }
         user.Name = updateDto.Name;
         user.PhoneNumber = updateDto.PhoneNumber;
-        acc.Email = updateDto.Email;
-
+        if (acc.Email != updateDto.Email)
+        {
+            if (await accountRepository.FindAsync(x => x.Email == updateDto.Email) != null)
+            {
+                throw new Exception("Email đã đăng ký");
+            }
+            else
+            {
+                acc.Email = updateDto.Email;
+            }
+        }
+        user.Avatar = updateDto.Avatar;
         await userRepository.UpdateAsync(user);
         await accountRepository.UpdateAsync(acc);
 
