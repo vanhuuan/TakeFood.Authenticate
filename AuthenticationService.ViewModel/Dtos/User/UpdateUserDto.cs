@@ -26,7 +26,7 @@ public class UpdateUserDto
     [Required]
     public string PhoneNumber { get; set; }
     /// <summary>
-    /// Số điện thoại
+    /// Avatar
     /// </summary>
     [JsonPropertyName("avatar")]
     [Required]
