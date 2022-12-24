@@ -211,12 +211,12 @@ public class UserService : IUserService
 
     public async Task<List<NewsUserDto>> GetNewsUser()
     {
-        List<User> allUser = (List<User>)await userRepository.GetAllAsync();
-        allUser.Reverse();
+        var allUser = await userRepository.GetAllAsync();
+        allUser = allUser.OrderByDescending(x => x.CreatedDate).Take(10).ToList();
 
         List<NewsUserDto> usersDto = new();
 
-        foreach (var user in allUser.Take(10))
+        foreach (var user in allUser)
         {
             NewsUserDto newsUserDto = new()
             {
