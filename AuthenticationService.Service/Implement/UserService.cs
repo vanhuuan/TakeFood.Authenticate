@@ -256,7 +256,7 @@ public class UserService : IUserService
                     UserId = user.Id,
                     Name = user.Name,
                     Email = account.Email,
-                    Gender = user.Gender == true ? "Nam" : "Nu",
+                    Gender = user.Gender == true ? "Nam" : "Nữ",
                     PhoneNumber = user.PhoneNumber,
                     Status = user.State,
                 });
