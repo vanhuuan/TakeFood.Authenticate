@@ -154,7 +154,7 @@ public class AuthenController : Controller
 
             var accessToken = JwtService.GenerateRenewToken(rs.Id);
             var mail = new MailContent();
-            mail.Subject = "Take Food Activation Email";
+            mail.Subject = "Take Food Renew Password";
             mail.To = rs.Email;
             mail.Body = $"\r\nHello {rs.Name},\r\n\r\nThank you for using TakeFood.\r\n\r\n. To renew your password click the link below.\r\n\r " +
                 $"{urlWeb + "changePass?token=" + accessToken}&email={gmail} \r\n\r\nBest,\r\nThe TakeFood team";
