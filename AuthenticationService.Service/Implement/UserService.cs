@@ -191,8 +191,18 @@ public class UserService : IUserService
         }
         user.Name = updateDto.Name;
         user.PhoneNumber = updateDto.PhoneNumber;
-        acc.Email = updateDto.Email;
-
+        if (acc.Email != updateDto.Email)
+        {
+            if (await accountRepository.FindAsync(x => x.Email == updateDto.Email) != null)
+            {
+                throw new Exception("Email đã đăng ký");
+            }
+            else
+            {
+                acc.Email = updateDto.Email;
+            }
+        }
+        user.Avatar = updateDto.Avatar;
         await userRepository.UpdateAsync(user);
         await accountRepository.UpdateAsync(acc);
 
@@ -201,12 +211,12 @@ public class UserService : IUserService
 
     public async Task<List<NewsUserDto>> GetNewsUser()
     {
-        List<User> allUser = (List<User>)await userRepository.GetAllAsync();
-        allUser.Reverse();
+        var allUser = await userRepository.GetAllAsync();
+        allUser = allUser.OrderByDescending(x => x.CreatedDate).Take(10).ToList();
 
         List<NewsUserDto> usersDto = new();
 
-        foreach (var user in allUser.Take(10))
+        foreach (var user in allUser)
         {
             NewsUserDto newsUserDto = new()
             {

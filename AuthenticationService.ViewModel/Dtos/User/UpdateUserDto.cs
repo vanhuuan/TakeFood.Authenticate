@@ -25,4 +25,10 @@ public class UpdateUserDto
     [JsonPropertyName("phoneNumber")]
     [Required]
     public string PhoneNumber { get; set; }
+    /// <summary>
+    /// Avatar
+    /// </summary>
+    [JsonPropertyName("avatar")]
+    [Required]
+    public string Avatar { get; set; }
 }

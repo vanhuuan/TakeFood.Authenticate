@@ -9,7 +9,7 @@ namespace AuthenticationService.Service.Implement;
 public class MailService : IMailService
 {
     private readonly MailSettings mailSettings;
-    private readonly String MailPass;
+    private readonly String mailPass;
 
 
     // mailSetting được Inject qua dịch vụ hệ thống
@@ -18,8 +18,7 @@ public class MailService : IMailService
     {
         mailSettings = settings.MailSettings;
         foreach (DictionaryEntry de in Environment.GetEnvironmentVariables())
-            Console.WriteLine("  {0} = {1}", de.Key, de.Value);
-        MailPass = Environment.GetEnvironmentVariable("MailPass") ?? mailSettings.Password;
+            mailPass = Environment.GetEnvironmentVariable("MailPass") ?? mailSettings.Password;
     }
 
     // Gửi email, theo nội dung trong mailContent
@@ -32,7 +31,7 @@ public class MailService : IMailService
                 client.EnableSsl = true;
                 client.DeliveryMethod = SmtpDeliveryMethod.Network;
                 client.UseDefaultCredentials = false;
-                client.Credentials = new NetworkCredential(mailSettings.Mail, MailPass);
+                client.Credentials = new NetworkCredential(mailSettings.Mail, mailPass);
                 MailMessage mailMessage = new MailMessage();
                 mailMessage.To.Add(mailContent.To);
                 mailMessage.From = new MailAddress(mailSettings.Mail);
