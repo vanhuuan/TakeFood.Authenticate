@@ -54,4 +54,7 @@ public class Store
     public string email { get; set; }
     [BsonElement("cmnd")]
     public string? CMND { get; set; }
+
+    [BsonElement("NameBank")]
+    public string? NameBank { get; set; }
 }
