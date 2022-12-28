@@ -16,6 +16,7 @@ public class CreateUserDto
     /// Email
     /// </summary>
     [JsonPropertyName("email")]
+    [EmailAddress]
     [Required]
     public string Email { get; set; }
 
@@ -23,6 +24,8 @@ public class CreateUserDto
     /// Username
     /// </summary>
     [JsonPropertyName("password")]
+    [DataType(DataType.Password)]
+    [RegularExpression(@"^.*(?=.{10,})(?=.*\d)(?=.*[a-zA-Z])(?=.*[@#$%^&+=]).*$")]
     [Required]
     public string Password { get; set; }
 
@@ -30,6 +33,7 @@ public class CreateUserDto
     /// Số điện thoại
     /// </summary>
     [JsonPropertyName("phoneNumber")]
+    [Phone]
     [Required]
     public string PhoneNumber { get; set; }
 }

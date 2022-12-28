@@ -12,6 +12,7 @@ public class LoginDto
     /// User name is phoneNumber or Email
     /// </summary>
     [JsonPropertyName("userName")]
+    [EmailAddress]
     [Required]
     public string UserName { get; set; }
 
@@ -19,6 +20,7 @@ public class LoginDto
     /// Password
     /// </summary>
     [JsonPropertyName("password")]
+    [RegularExpression(@"^.*(?=.{10,})(?=.*\d)(?=.*[a-zA-Z])(?=.*[@#$%^&+=]).*$")]
     [Required]
     public string Password { get; set; }
 }

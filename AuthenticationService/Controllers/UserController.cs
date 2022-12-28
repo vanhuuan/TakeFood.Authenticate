@@ -261,7 +261,7 @@ public class UserController : ControllerBase
 
     [HttpPut]
     [Route("MakeAdmin")]
-    public async Task<IActionResult> MakeAdmin([FromQuery] string userEmail)
+    public async Task<IActionResult> MakeAdmin([FromQuery][EmailAddress] string userEmail)
     {
         try
         {

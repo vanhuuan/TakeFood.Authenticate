@@ -16,6 +16,7 @@ public class UpdateUserDto
     /// Email
     /// </summary>
     [JsonPropertyName("email")]
+    [EmailAddress]
     [Required]
     public string Email { get; set; }
 
@@ -23,6 +24,7 @@ public class UpdateUserDto
     /// Số điện thoại
     /// </summary>
     [JsonPropertyName("phoneNumber")]
+    [Phone]
     [Required]
     public string PhoneNumber { get; set; }
     /// <summary>
